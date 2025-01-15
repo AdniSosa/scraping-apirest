@@ -42,19 +42,22 @@ app.get('/noticias', (req, res) => {
 
 app.get('/noticias/:id', (req, res) => {
     leerDatos();
-    const id = parseInt(req.params.id);
+    const id = parseInt(req.params.id, 10);
     const noticiaEncontrada = noticias.find(noticia => noticia.id === id)
-    if (!id) {
-        res.status(404).json({error: `Noticia no encontrada`});
+    
+    if (!noticiaEncontrada) {
+        return res.status(404).json(`Noticia no encontrada`);
     } 
-    res.status(200).json(noticiaEncontrada)
         
+    res.status(200).json(noticiaEncontrada)
+    
+    
 })
 
 //create
 app.post('/noticias', (req, res) => {
     const noticiaNueva = {
-        id: noticias.length + 1,
+        id: noticias[noticias.length - 1].id + 1,
         titulo: req.body.titulo,
         descripcion: req.body.descripcion,
         enlace: req.body.enlace,
@@ -106,9 +109,8 @@ app.put('/noticias/:id', (req, res) => {
 }) 
 
 //DELETE
-app.delete('/usuarios/:id', (req, res) => {
-    const id = req.params.id;
-    const noticiaEncontrada = noticias[id];
+app.delete('/noticias/:id', (req, res) => {
+    const id = parseInt(req.params.id, 10);
     
     leerDatos(); 
 
@@ -117,11 +119,23 @@ app.delete('/usuarios/:id', (req, res) => {
     }
     
     noticias = noticias.filter(noticia => noticia.id !== id);
-    
     guardarDatos(); 
     res.json({Mensaje: `Noticia borrada`})
 
 })
+
+/* app.delete('/noticias/:id', (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    leerDatos();
+  
+    if (noticias[id]) {
+      noticias.splice(id, 1);
+      guardarDatos();
+      res.status(200).send('Noticia eliminada.');
+    } else {
+      res.status(404).send('Noticia no encontrada.');
+    }
+  }); */
 
 
 app.listen(PORT, () => {
